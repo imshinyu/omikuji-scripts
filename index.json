@@ -68,5 +68,15 @@
     "modified": "2026-07-14",
     "toml": "scripts/reakjra/ubisoftconnect/ubisoft-connect.toml",
     "icon": "scripts/reakjra/ubisoftconnect/icon.png"
+  },
+  {
+    "author": "reakjra",
+    "slug": "wherewindsmeet",
+    "name": "Where Winds Meet",
+    "description": "Downloads and installs the Where Winds Meet launcher. Pick Globalor CN",
+    "has_shell": false,
+    "modified": "2026-08-27",
+    "toml": "scripts/reakjra/wherewindsmeet/wherewindsmeet.toml",
+    "icon": "scripts/reakjra/wherewindsmeet/icon.png"
   }
 ]
