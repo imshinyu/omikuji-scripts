@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import re
 import sys
 import tomllib
 from pathlib import Path
@@ -6,7 +7,7 @@ from pathlib import Path
 TASKS = {
     "init_prefix": [],
     "winetricks": ["verbs"],
-    "download": ["url", "dest"],
+    "download": ["dest"],
     "extract": ["archive", "dest"],
     "run_exe": ["exe"],
     "shell": ["run"],
@@ -97,6 +98,27 @@ def check_script(tag, data):
             elif isinstance(step[field], str):
                 templated.append(step[field])
         templated.extend(str(v) for v in step.get("dll_overrides", {}).values())
+        if task == "download":
+            url = str(step.get("url", "")).strip()
+            url_from = str(step.get("url_from", "")).strip()
+            url_match = str(step.get("url_match", "")).strip()
+            if not url and not url_from:
+                err(f"{tag}: download step needs url or url_from")
+            elif url and url_from:
+                err(f"{tag}: download step has both url and url_from")
+            elif url and url_match:
+                err(f"{tag}: url_match is only valid with url_from")
+            elif url_from:
+                templated.append(step["url_from"])
+                if not url_match:
+                    err(f"{tag}: url_from needs url_match")
+                else:
+                    try:
+                        re.compile(url_match)
+                    except re.error as e:
+                        err(f"{tag}: invalid url_match {url_match!r} ({e})")
+                if str(step.get("sha256", "")).strip():
+                    err(f"{tag}: sha256 cannot be used with url_from, the target changes per release")
         if "when" in step:
             check_when(step["when"], f"step {task!r}")
 
@@ -108,9 +130,13 @@ def check_script(tag, data):
     for game in games:
         if not str(game.get("name", "")).strip():
             err(f"{tag}: game.name is missing")
-        if not str(game.get("exe", "")).strip():
-            err(f"{tag}: game.exe is missing")
-        else:
+        exe = str(game.get("exe", "")).strip()
+        from_registry = str(game.get("exe_from_registry", "")).strip()
+        if not exe and not from_registry:
+            err(f"{tag}: game needs exe or exe_from_registry")
+        elif exe and from_registry and (exe.startswith("/") or "${" in exe):
+            err(f"{tag}: game.exe must be relative to the install folder when exe_from_registry is set")
+        elif exe and not from_registry:
             templated.append(game["exe"])
         if game.get("runner", "") not in ("", "wine", "native"):
             err(f"{tag}: unsupported game.runner {game.get('runner')!r}")

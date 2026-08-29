@@ -2,7 +2,7 @@
 name = "Netmarble Launcher"
 description = "Downloads the official Netmarble Launcher installer and runs it in a prefix of your choice"
 author = "reakjra"
-note = "Usable in version 0.8.2 \nDownload might take a bit."
+note = "Usable in version 0.12.0 or newer.\nDownload might take a bit.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
 icon = "./icon.png"
 
 [[input]]
@@ -31,7 +31,8 @@ dll_overrides = { "powershell.exe" = "d" }
 
 [game]
 name = "Netmarble Launcher"
-exe = "${prefix}/drive_c/Program Files/Netmarble/Netmarble Launcher/Netmarble Launcher.exe"
+exe_from_registry = "ebab0fa0-3e67-5055-898a-0b6ee5815a99"
+exe = "Netmarble Launcher.exe"
 
 [game.dll_overrides]
 "powershell.exe" = "d"

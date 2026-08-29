@@ -3,6 +3,7 @@ name = "NIKKE"
 description = "Downloads the NikkeLinux miniloader and runs it to install NIKKE"
 author = "reakjra"
 icon = "./icon.png"
+note = "Usable in version 0.12.0 or newer.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
 
 [[input]]
 id = "prefix"
@@ -25,4 +26,4 @@ exe = "${cache}/NikkeMiniloader.exe"
 [game]
 name = "NIKKE"
 wine_version = "system"
-exe = "${prefix}/drive_c/NIKKE/Launcher/nikke_launcher.exe"
+exe_from_registry = "nikke_launcher"

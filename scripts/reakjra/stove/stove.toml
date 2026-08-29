@@ -3,13 +3,18 @@ name = "STOVE"
 description = "Downloads the STOVE client installer and runs it in a prefix of your choice"
 author = "reakjra"
 icon = "./icon.png"
-note = "This may take a while due WebView2 installation."
+note = "Usable in version 0.12.0 or newer.\nThis may take a while due WebView2 installation.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
 
 [[input]]
 id = "prefix"
 kind = "prefix"
 picker = "path"
 label = "Wine prefix"
+
+[[input]]
+id = "runner"
+kind = "runner"
+label = "Runner (any Proton works~)"
 
 [[step]]
 task = "init_prefix"
@@ -34,4 +39,4 @@ exe = "${cache}/STOVESetup.exe"
 
 [game]
 name = "STOVE"
-exe = "${prefix}/drive_c/ProgramData/Smilegate/STOVE/STOVE.exe"
+exe_from_registry = "StoveLauncher"

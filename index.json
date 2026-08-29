@@ -31,6 +31,16 @@
   },
   {
     "author": "reakjra",
+    "slug": "nevernesstoeverness",
+    "name": "Neverness To Everness",
+    "description": "Downloads the official Neverness To Everness launcher installer and runs it in a prefix of your choice",
+    "has_shell": false,
+    "modified": "",
+    "toml": "scripts/reakjra/nevernesstoeverness/nevernesstoeverness.toml",
+    "icon": "scripts/reakjra/nevernesstoeverness/icon.png"
+  },
+  {
+    "author": "reakjra",
     "slug": "nikke",
     "name": "NIKKE",
     "description": "Downloads the NikkeLinux miniloader and runs it to install NIKKE",
