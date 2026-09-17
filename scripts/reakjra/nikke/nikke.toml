@@ -1,6 +1,6 @@
 [script]
 name = "NIKKE"
-description = "Downloads the NikkeLinux miniloader and runs it to install NIKKE"
+description = "Downloads the official NIKKE miniloader and runs it in a prefix of your choice"
 author = "reakjra"
 icon = "./icon.png"
 note = "Usable in version 0.12.0 or newer.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
@@ -11,12 +11,17 @@ kind = "prefix"
 picker = "path"
 label = "Wine prefix"
 
+[[input]]
+id = "runner"
+kind = "runner"
+label = "Runner (Proton recommended~)"
+
 [[step]]
 task = "init_prefix"
 
 [[step]]
 task = "download"
-url = "https://raw.githubusercontent.com/KoleckOLP/NikkeLinux/master/NikkeMiniloader0.0.6.143.exe"
+url = "https://nikke-en.com/nikkeminiloader.exe"
 dest = "${cache}/NikkeMiniloader.exe"
 
 [[step]]
@@ -25,5 +30,4 @@ exe = "${cache}/NikkeMiniloader.exe"
 
 [game]
 name = "NIKKE"
-wine_version = "system"
 exe_from_registry = "nikke_launcher"
