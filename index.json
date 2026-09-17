@@ -43,9 +43,9 @@
     "author": "reakjra",
     "slug": "nikke",
     "name": "NIKKE",
-    "description": "Downloads the NikkeLinux miniloader and runs it to install NIKKE",
+    "description": "Downloads the official NIKKE miniloader and runs it in a prefix of your choice",
     "has_shell": false,
-    "modified": "2026-08-29",
+    "modified": "2026-09-17",
     "toml": "scripts/reakjra/nikke/nikke.toml",
     "icon": "scripts/reakjra/nikke/icon.png"
   },
