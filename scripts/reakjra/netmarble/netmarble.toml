@@ -2,7 +2,7 @@
 name = "Netmarble Launcher"
 description = "Downloads the official Netmarble Launcher installer and runs it in a prefix of your choice"
 author = "reakjra"
-note = "Usable in version 0.12.0 or newer.\nDownload might take a bit.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
+note = "Download might take a bit.\nLet the launcher open when the installer finishes, then close it so the script can continue. Closing the installer early can leave the install folder unrecorded."
 icon = "./icon.png"
 
 [[input]]
