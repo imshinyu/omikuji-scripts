@@ -11,6 +11,16 @@
   },
   {
     "author": "reakjra",
+    "slug": "eaapp",
+    "name": "EA app",
+    "description": "Downloads the EA app installer and runs it in a prefix of your choice",
+    "has_shell": false,
+    "modified": "2026-09-24",
+    "toml": "scripts/reakjra/eaapp/ea-app.toml",
+    "icon": "scripts/reakjra/eaapp/icon.png"
+  },
+  {
+    "author": "reakjra",
     "slug": "hoyoplay",
     "name": "HoYoPlay",
     "description": "Downloads the official HoYoPlay launcher installer and runs it in a prefix of your choice",
