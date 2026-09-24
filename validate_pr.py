@@ -165,9 +165,6 @@ def main():
             err(f"{f}: files live at scripts/author/script/file, nothing else")
             continue
         _, owner, slug, name = parts
-        if owner.lower() != author.lower():
-            err(f"{f}: you can only change your own folder ({author}/)")
-            continue
         if slug.startswith(".") or not slug:
             err(f"{f}: bad script folder {slug!r}")
             continue
@@ -175,6 +172,10 @@ def main():
             err(f"{f}: file type not allowed ({', '.join(sorted(EXTS))})")
             continue
         script_dirs.add((owner, slug))
+
+    foreign = {owner for owner, _ in script_dirs if owner.lower() != author.lower()}
+    if foreign and len(script_dirs) != 1:
+        err("a PR that edits someone else's script can only touch that one script")
 
     titles = []
     for owner, slug in sorted(script_dirs):
@@ -214,6 +215,8 @@ def main():
         sys.exit(1)
     if titles:
         Path("merge_subject.txt").write_text(f"{author}: {', '.join(titles)}\n")
+    if foreign:
+        Path("foreign_owner.txt").write_text(f"{foreign.pop()}\n")
     print(f"validated {len(script_dirs)} script(s), all good")
 
 

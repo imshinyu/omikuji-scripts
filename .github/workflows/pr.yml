@@ -19,6 +19,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           path: pr
+          allow-unsafe-pr-checkout: true
+          persist-credentials: false
       - name: changed files
         env:
           GH_TOKEN: ${{ github.token }}
@@ -41,25 +43,21 @@ jobs:
             echo "fix and push to this branch, the check reruns on its own."
           } > comment.md
           gh pr comment ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --body-file comment.md
-      - name: automerge
-        if: ${{ !github.event.pull_request.draft }}
+      - name: script owner
+        id: owner
+        run: echo "login=$(cat foreign_owner.txt 2>/dev/null)" >> "$GITHUB_OUTPUT"
+      - name: ask the owner
+        if: ${{ !github.event.pull_request.draft && steps.owner.outputs.login != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          if [ -s merge_subject.txt ]; then
-            gh pr merge ${{ github.event.pull_request.number }} --squash --repo ${{ github.repository }} --subject "$(cat merge_subject.txt)"
-          else
-            gh pr merge ${{ github.event.pull_request.number }} --squash --repo ${{ github.repository }}
-          fi
-      - name: regenerate index
-        if: ${{ !github.event.pull_request.draft }}
-        env:
-          BASE: ${{ github.event.pull_request.base.ref }}
-        run: |
-          git fetch origin "$BASE"
-          git checkout -B "$BASE" "origin/$BASE"
-          python3 gen_index.py
-          git config user.name "index-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add index.json
-          git diff --cached --quiet || (git commit -m "index: $(cat merge_subject.txt 2>/dev/null || echo regenerate)" && git push origin "$BASE")
+          OWNER: ${{ steps.owner.outputs.login }}
+        run: >
+          gh pr comment ${{ github.event.pull_request.number }} --repo ${{ github.repository }}
+          --body "@$OWNER this PR edits your script. Comment \`/approve\` if you're ok with it and it merges on its own."
+      - name: automerge
+        if: ${{ !github.event.pull_request.draft && steps.owner.outputs.login == '' }}
+        uses: ./.github/actions/merge
+        with:
+          number: ${{ github.event.pull_request.number }}
+          base: ${{ github.event.pull_request.base.ref }}
+          token: ${{ github.token }}
