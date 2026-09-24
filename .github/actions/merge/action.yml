@@ -1,0 +1,38 @@
+name: merge
+description: squash-merge a validated PR and regenerate the index on the base branch
+
+inputs:
+  number:
+    required: true
+  base:
+    required: true
+  head-sha:
+    description: refuse to merge if the PR head moved past this commit
+    default: ""
+  token:
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        NUMBER: ${{ inputs.number }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+      run: |
+        args=(--squash --repo "$GITHUB_REPOSITORY")
+        [ -n "$HEAD_SHA" ] && args+=(--match-head-commit "$HEAD_SHA")
+        [ -s merge_subject.txt ] && args+=(--subject "$(cat merge_subject.txt)")
+        gh pr merge "$NUMBER" "${args[@]}"
+    - shell: bash
+      env:
+        BASE: ${{ inputs.base }}
+      run: |
+        git fetch origin "$BASE"
+        git checkout -B "$BASE" "origin/$BASE"
+        python3 gen_index.py
+        git config user.name "index-bot"
+        git config user.email "actions@users.noreply.github.com"
+        git add index.json
+        git diff --cached --quiet || (git commit -m "index: $(cat merge_subject.txt 2>/dev/null || echo regenerate)" && git push origin "$BASE")

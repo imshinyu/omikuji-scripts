@@ -1,0 +1,54 @@
+name: approve
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  approve:
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/approve') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: exact command
+        env:
+          BODY: ${{ github.event.comment.body }}
+        run: '[ "$(printf %s "$BODY" | tr -d "[:space:]")" = "/approve" ]'
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: pr
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh api "repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}"
+          -q '"sha=\(.head.sha)\nauthor=\(.user.login)\nbase=\(.base.ref)\nopen=\(.state == "open" and (.draft | not))"'
+          >> "$GITHUB_OUTPUT"
+      - name: open and ready
+        run: '[ "${{ steps.pr.outputs.open }}" = "true" ]'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.sha }}
+          path: pr
+      - name: changed files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh api "repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}/files"
+          --paginate -q '.[].filename' > changed.txt
+      - name: validate
+        run: python3 validate_pr.py pr changed.txt "${{ steps.pr.outputs.author }}"
+      - name: commenter owns the script
+        env:
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: '[ -s foreign_owner.txt ] && [ "$(tr -d "[:space:]" < foreign_owner.txt | tr "[:upper:]" "[:lower:]")" = "$(printf %s "$COMMENTER" | tr "[:upper:]" "[:lower:]")" ]'
+      - uses: ./.github/actions/merge
+        with:
+          number: ${{ github.event.issue.number }}
+          base: ${{ steps.pr.outputs.base }}
+          head-sha: ${{ steps.pr.outputs.sha }}
+          token: ${{ github.token }}
