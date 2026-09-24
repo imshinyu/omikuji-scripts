@@ -1,0 +1,1 @@
+- reakjra/eaapp: icon './icon.png' not found inside the script folder

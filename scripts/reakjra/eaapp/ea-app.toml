@@ -1,0 +1,33 @@
+[script]
+name = "EA app"
+description = "Downloads the EA app installer and runs it in a prefix of your choice"
+author = "reakjra"
+icon = "./icon.png"
+note = "Let the EA app open when the installer finishes, then close it so the script can continue."
+
+[[input]]
+id = "prefix"
+kind = "prefix"
+picker = "path"
+label = "Wine prefix"
+
+[[input]]
+id = "runner"
+kind = "runner"
+label = "Runner (Proton recommended~)"
+
+[[step]]
+task = "init_prefix"
+
+[[step]]
+task = "download"
+url = "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe"
+dest = "${cache}/EAappInstaller.exe"
+
+[[step]]
+task = "run_exe"
+exe = "${cache}/EAappInstaller.exe"
+
+[game]
+name = "EA app"
+exe = "${prefix}/drive_c/Program Files/Electronic Arts/EA Desktop/EA Desktop/EADesktop.exe"
